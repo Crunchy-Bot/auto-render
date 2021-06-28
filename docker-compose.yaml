@@ -1,12 +1,12 @@
 version: '3'
 
 services:
-  master:
+  auto-render-master:
     build: ./master
     volumes:
       - master-db:/app
     restart: always
-  worker:
+  auto-render-worker:
     build: ./worker
     restart: always
     deploy:
