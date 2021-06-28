@@ -18,7 +18,7 @@ from jinja2.exceptions import TemplateNotFound
 from workers import RenderWorker
 
 logger = logging.getLogger("render-master")
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 
 LUST_ADMIN_URL = os.getenv("LUST_ADMIN_HOST")
@@ -121,6 +121,7 @@ async def render_template(template_id: str, context: dict = Body(...)):
         return JSONResponse({"template": template_id, "message": "not found"}, status_code=404)
 
     rendered_html = await template.render_async(**context)
+    logger.debug(f"rendered: {rendered_html}")
     render_id = uuid.uuid4()
     app.rendered[render_id] = rendered_html
 
