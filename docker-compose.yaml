@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  master:
+    build: ./master
+    ports:
+      - "8000:8000"
+    volumes:
+      - master-db:/app
+  worker:
+    build: ./worker
+    deploy:
+      mode: replicated
+      replicas: 4
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 300m
+    depends_on:
+      - master
+
+volumes:
+  master-db:
+
