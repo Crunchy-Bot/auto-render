@@ -7,8 +7,10 @@ services:
       - "8000:8000"
     volumes:
       - master-db:/app
+    restart: always
   worker:
     build: ./worker
+    restart: always
     deploy:
       mode: replicated
       restart_policy:
