@@ -64,6 +64,7 @@ async def worker_connect(websocket: WebSocket):
     app.workers.append(ws_handle)
     asyncio.create_task(ws_handle.handle_reader())
     await ws_handle.handle_writes()
+    app.workers.remove(ws_handle)
 
 
 class TemplateResponse(BaseModel):

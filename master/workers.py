@@ -1,4 +1,5 @@
 import asyncio
+import uuid
 
 from typing import Dict
 from fastapi import WebSocket
@@ -6,9 +7,16 @@ from fastapi import WebSocket
 
 class RenderWorker:
     def __init__(self, ws: WebSocket):
+        self.tag = uuid.uuid4()
         self.events = asyncio.Queue()
         self.handles: Dict[str, asyncio.Future] = {}
         self.ws = ws
+
+    def __eq__(self, other):
+        return other == self.tag
+
+    def __hash__(self):
+        return hash(self.tag)
 
     async def handle_reader(self):
         while True:
