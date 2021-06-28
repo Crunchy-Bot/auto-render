@@ -3,7 +3,7 @@ import sqlite3
 import uuid
 import logging
 from typing import Dict
-from pydantic import UUID4
+from pydantic import UUID4, BaseModel
 from collections import deque
 
 from fastapi import FastAPI, WebSocket, Body
@@ -56,7 +56,12 @@ async def worker_connect(websocket: WebSocket):
     await ws_handle.handle_writes()
 
 
-@app.post("/templates")
+class TemplateResponse(BaseModel):
+    template: str
+    message: str
+
+
+@app.post("/templates", response_model=TemplateResponse)
 async def add_template(template_id: str = Body(...), template: str = Body(...)):
     render_templates[template_id] = template
 
@@ -73,10 +78,10 @@ async def add_template(template_id: str = Body(...), template: str = Body(...)):
     )
     connection.commit()
 
-    return JSONResponse({"template": template_id, "message": "template added"})
+    return TemplateResponse(template=template_id, message="template added")
 
 
-@app.delete("/templates")
+@app.delete("/templates", response_model=TemplateResponse)
 async def remove_template(template_id: str):
     try:
         del render_templates[template_id]
@@ -87,10 +92,15 @@ async def remove_template(template_id: str):
     cursor.execute("DELETE FROM templates WHERE id = ?", (template_id,))
     connection.commit()
 
-    return JSONResponse({"template": template_id, "message": "template deleted"})
+    return TemplateResponse(template=template_id, message="template deleted")
 
 
-@app.post("/render/{template_id:str}")
+class RenderResponse(BaseModel):
+    template: str
+    render: str
+
+
+@app.post("/render/{template_id:str}", responses={404: {"model": TemplateResponse}})
 async def render_template(template_id: str, context: dict = Body(...)):
     logger.info(f"rendering template: {template_id} with context: {context!r}")
     try:
@@ -111,9 +121,11 @@ async def render_template(template_id: str, context: dict = Body(...)):
 
     response = await fut
     del app.rendered[render_id]
-    return JSONResponse({
-        "render": response
-    })
+
+    return RenderResponse(
+        template=template_id,
+        render=response,
+    )
 
 
 @app.get("/rendered/{render_id:uuid}")

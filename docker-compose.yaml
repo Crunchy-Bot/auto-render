@@ -11,7 +11,6 @@ services:
     build: ./worker
     deploy:
       mode: replicated
-      replicas: 4
       restart_policy:
         condition: on-failure
       resources:
@@ -19,6 +18,7 @@ services:
           memory: 300m
     depends_on:
       - master
+
 
 volumes:
   master-db:
