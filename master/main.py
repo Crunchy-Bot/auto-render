@@ -74,7 +74,6 @@ class TemplateResponse(BaseModel):
 
 @app.post("/templates", response_model=TemplateResponse)
 async def add_template(template_id: str = Body(...), template: str = Body(...)):
-    template = f'"<div id="render">{template}</div>"'
     render_templates[template_id] = template
 
     cursor = connection.cursor()
@@ -134,6 +133,9 @@ async def render_template(template_id: str, context: dict = Body(...)):
 
     response = await fut
     del app.rendered[render_id]
+
+    if response is None:
+        return JSONResponse({"template": template_id, "message": "no render id in html"}, status_code=400)
 
     payload = {
         "format": "png",

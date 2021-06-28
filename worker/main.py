@@ -5,6 +5,7 @@ import logging
 
 from selenium import webdriver
 from selenium.webdriver.firefox import options
+from selenium.common.exceptions import NoSuchElementException
 
 try:
     import uvloop
@@ -38,7 +39,11 @@ async def main():
         while not ws.closed:
             msg = await ws.receive_json()
             render_id = msg['id']
-            bs64 = await loop.run_in_executor(None, get_html, render_id)
+            try:
+                bs64 = await loop.run_in_executor(None, get_html, render_id)
+            except NoSuchElementException:
+                bs64 = None
+
             data = {
                 "id": render_id,
                 "render": bs64
