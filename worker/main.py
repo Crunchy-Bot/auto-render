@@ -25,7 +25,7 @@ driver = webdriver.Firefox(options=options)
 def get_html(render_id):
     start = time.perf_counter()
     driver.get(target_url.format(render_id))
-    resp = driver.find_element_by_tag_name("body").screenshot_as_base64
+    resp = driver.find_element_by_id("render").screenshot_as_base64
     stop = time.perf_counter() - start
     logger.info(f"render took {stop * 1000}ms to render")
     return resp

@@ -73,6 +73,7 @@ class TemplateResponse(BaseModel):
 
 @app.post("/templates", response_model=TemplateResponse)
 async def add_template(template_id: str = Body(...), template: str = Body(...)):
+    template = f'"<div id="render">{template}</div>"'
     render_templates[template_id] = template
 
     cursor = connection.cursor()
