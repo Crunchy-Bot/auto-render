@@ -15,7 +15,7 @@ except ImportError:
 logger = logging.getLogger("render-engine")
 logging.basicConfig(level=logging.INFO)
 
-target_url = "http://master:8000/rendered/{}"
+target_url = "http://auto-render:8000/rendered/{}"
 
 options = options.Options()
 options.headless = True
@@ -34,7 +34,7 @@ def get_html(render_id):
 async def main():
     loop = asyncio.get_running_loop()
     async with aiohttp.ClientSession() as sess:
-        ws = await sess.ws_connect("ws://master:8000/worker")
+        ws = await sess.ws_connect("ws://auto-render:8000/worker")
         while not ws.closed:
             msg = await ws.receive_json()
             render_id = msg['id']
