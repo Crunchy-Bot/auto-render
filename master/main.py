@@ -1,7 +1,11 @@
 import asyncio
 import sqlite3
 import uuid
+import os
+import httpx
 import logging
+import json
+
 from typing import Dict
 from pydantic import UUID4, BaseModel
 from collections import deque
@@ -15,6 +19,11 @@ from workers import RenderWorker
 
 logger = logging.getLogger("render-master")
 logging.basicConfig(level=logging.INFO)
+
+
+LUST_ADMIN_URL = os.getenv("LUST_ADMIN_HOST")
+LUST_URL = os.getenv("LUST_HOST")
+
 
 if __name__ != '__main__':
     connection = sqlite3.connect("templates.db")
@@ -38,6 +47,7 @@ class CustomFastApi(FastAPI):
 
         self.workers = deque([])
         self.rendered: Dict[uuid.UUID, str] = {}
+        self.session = httpx.AsyncClient(http2=True)
 
 
 app = CustomFastApi(
@@ -122,9 +132,20 @@ async def render_template(template_id: str, context: dict = Body(...)):
     response = await fut
     del app.rendered[render_id]
 
+    payload = {
+        "format": "png",
+        "data": response,
+        "category": template_id
+    }
+    r = await app.session.post(f"{LUST_ADMIN_URL}/admin/create/image", json=payload)
+    r.raise_for_status()
+
+    r_data = json.loads(await r.aread())
+    file_id = r_data['data']['file_id']
+
     return RenderResponse(
         template=template_id,
-        render=response,
+        render=f"{LUST_URL}/{template_id}/{file_id}",
     )
 
 

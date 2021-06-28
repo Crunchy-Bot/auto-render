@@ -2,3 +2,4 @@ fastapi
 uvicorn[standard]
 selenium
 jinja2
+httpx[http2]
