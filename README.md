@@ -7,6 +7,6 @@ This system uses a master api process, you can submit html remplates and then re
 1) - `git clone https://github.com/Crunchy-Bot/auto-render.git`
 2) - `cd auto-render`
 3) - `docker-compose build`
-4) - `docker-compose up -d`
+4) - `docker-compose up --scale worker=8 --detach`
 
 You can view the api details at `http://127.0.0.1:8000`
