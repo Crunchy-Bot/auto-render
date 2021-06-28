@@ -10,3 +10,6 @@ This system uses a master api process, you can submit html remplates and then re
 4) - `docker-compose up --scale worker=8 --detach`
 
 You can view the api details at `http://127.0.0.1:8000`
+
+## Env Vars
+The system requires both `LUST_ADMIN_HOST` and `LUST_HOST` for submitting renders to [lust](https://github.com/chillfish8/lust)
