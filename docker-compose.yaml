@@ -3,8 +3,6 @@ version: '3'
 services:
   master:
     build: ./master
-    ports:
-      - "8000:8000"
     volumes:
       - master-db:/app
     restart: always
