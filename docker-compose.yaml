@@ -7,6 +7,9 @@ services:
     volumes:
       - master-db:/app
     restart: always
+    environment:
+      - LUST_HOST=https://images.crunchy.gg/content
+      - LUST_ADMIN_HOST=http://lust:7070
   auto-render-worker:
     build: ./worker
     restart: always
@@ -16,10 +19,16 @@ services:
         condition: on-failure
       resources:
         limits:
-          memory: 300m
+          memory: 400m
+    links:
+      - "auto-render-master:auto-render"
     depends_on:
       - auto-render-master
 
+networks:
+  default:
+    external: true
+    name: crunchy_net
 
 volumes:
   master-db:
