@@ -18,7 +18,7 @@ from jinja2.exceptions import TemplateNotFound
 from workers import RenderWorker
 
 logger = logging.getLogger("render-master")
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 
 LUST_ADMIN_URL = os.getenv("LUST_ADMIN_HOST")
