@@ -3,6 +3,7 @@ version: '3'
 services:
   auto-render-master:
     build: ./master
+    container_name: auto-render
     volumes:
       - master-db:/app
     restart: always
